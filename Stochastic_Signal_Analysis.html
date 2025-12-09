@@ -11,9 +11,10 @@
     window.MathJax = {
       tex: {
         inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+        packages: {'[+]': ['ams', 'mathtools']}
       },
-      chtml: { scale: 1.05, mtextInheritFont: true },
+      chtml: { scale: 0.95, mtextInheritFont: true },
       options: { enableMenu: false }
     };
     </script>
@@ -21,309 +22,167 @@
 
     <style>
         :root {
-            /* Light Theme Variables */
-            --bg-body: #f0f2f5;
+            /* Light Theme */
+            --bg-body: #f4f7f6;
             --bg-card: #ffffff;
-            --text-main: #1c1e21;
-            --text-muted: #606770;
-            --border: #e4e6eb;
-            --primary: #007bff;
-            --primary-hover: #0056b3;
-            --accent: #e74c3c;
-            --success: #2ecc71;
-            --header-bg: #ffffff;
-            --header-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            --table-head: #f7f9fa;
-            --btn-reset: #6c757d;
-            --slider-track: #e4e6eb;
-            --chart-grid: #f0f0f0;
-            --chart-text: #666;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --border: #dfe6e9;
+            --primary: #0984e3;
+            --primary-bg: rgba(9, 132, 227, 0.05);
+            --accent: #d63031;
+            --success: #00b894;
+            --purple: #6c5ce7;
+            --header-bg: rgba(255, 255, 255, 0.95);
+            --header-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --theory-head: #f1f2f6;
+            --code-bg: #f8f9fa;
         }
 
         body.dark-mode {
-            /* Dark Theme Variables */
+            /* Dark Theme */
             --bg-body: #121212;
             --bg-card: #1e1e1e;
-            --text-main: #e4e6eb;
-            --text-muted: #b0b3b8;
-            --border: #2d2d2d;
-            --primary: #3d8bfd;
-            --primary-hover: #5a9bff;
-            --accent: #ff6b6b;
-            --success: #00b894;
-            --header-bg: #1e1e1e;
-            --header-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
-            --table-head: #252525;
-            --btn-reset: #4a4a4a;
-            --slider-track: #3a3b3c;
-            --chart-grid: #333;
-            --chart-text: #aaa;
+            --text-main: #dfe6e9;
+            --text-muted: #b2bec3;
+            --border: #2d3436;
+            --primary: #74b9ff;
+            --primary-bg: rgba(116, 185, 255, 0.1);
+            --accent: #ff7675;
+            --success: #55efc4;
+            --purple: #a29bfe;
+            --header-bg: rgba(30, 30, 30, 0.95);
+            --header-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            --theory-head: #2d3436;
+            --code-bg: #252525;
         }
 
-        /* --- GLOBAL RESET & MOBILE FIXES --- */
-        * {
-            box-sizing: border-box; /* Crucial for mobile sizing */
-        }
-
+        /* Global Reset */
+        * { box-sizing: border-box; }
         html, body {
-            width: 100%;
-            overflow-x: hidden; /* Force hide horizontal scrollbar */
-            margin: 0; 
-            padding: 0;
+            margin: 0; padding: 0; width: 100%; overflow-x: hidden;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            transition: background-color 0.3s, color 0.3s;
-            line-height: 1.6;
-            -webkit-font-smoothing: antialiased;
+            background-color: var(--bg-body); color: var(--text-main);
+            transition: background-color 0.3s, color 0.3s; line-height: 1.6;
         }
 
-        /* --- Navigation / Header --- */
+        /* Header */
         header {
-            background-color: var(--header-bg);
-            padding: 0.8rem 1.5rem; /* Reduced padding for mobile */
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            box-shadow: var(--header-shadow);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            backdrop-filter: blur(10px);
-            width: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            background-color: var(--header-bg); border-bottom: 1px solid var(--border);
+            padding: 0.8rem 1.5rem; display: flex; justify-content: space-between; align-items: center;
+            backdrop-filter: blur(10px); box-shadow: var(--header-shadow);
         }
+        .header-spacer { height: 80px; }
 
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .logo-container:hover { opacity: 0.8; }
-        
+        .logo-container { display: flex; align-items: center; gap: 12px; cursor: pointer; }
         .logo-icon {
-            width: 32px; height: 32px;
-            background: linear-gradient(135deg, var(--primary), #00d2ff);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 18px;
-            flex-shrink: 0;
+            width: 36px; height: 36px; background: linear-gradient(135deg, var(--primary), #00cec9);
+            border-radius: 8px; color: white; display: grid; place-items: center; font-weight: 800;
         }
-
-        .logo-text h1 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin: 0;
-            color: var(--text-main);
-            line-height: 1.2;
-        }
-        .logo-text small {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            display: block;
-        }
+        .logo-text h1 { font-size: 1.1rem; margin: 0; font-weight: 700; }
+        .logo-text small { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
 
         .theme-toggle {
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-main);
-            padding: 8px 12px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-            white-space: nowrap;
+            background: transparent; border: 1px solid var(--border); color: var(--text-main);
+            padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; transition: all 0.2s;
         }
-        .theme-toggle:hover { background-color: var(--bg-body); }
+        .theme-toggle:hover { background-color: var(--primary-bg); border-color: var(--primary); }
 
-        /* --- Main Layout --- */
-        .container {
-            max-width: 1100px;
-            width: 100%;
-            margin: 30px auto;
-            padding: 0 15px; /* Ensure padding doesn't break width due to box-sizing */
-            padding-bottom: 100px;
-        }
-
-        section { margin-bottom: 40px; }
-
+        /* Container */
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; padding-bottom: 100px; }
+        section { margin-bottom: 60px; }
+        
         h2 {
-            font-size: 1.4rem;
-            margin-bottom: 15px;
-            padding-left: 15px;
-            border-left: 5px solid var(--primary);
-            color: var(--text-main);
+            font-size: 1.6rem; margin-bottom: 30px; padding-left: 15px;
+            border-left: 5px solid var(--primary); color: var(--text-main);
         }
 
-        .card {
-            background-color: var(--bg-card);
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-            border: 1px solid var(--border);
-            width: 100%; /* Ensure card fits container */
+        /* --- THEORY CARDS --- */
+        .theory-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px;
         }
-        
-        /* --- Interactive Components --- */
-        input[type=range] {
-            -webkit-appearance: none;
-            width: 100%;
-            background: transparent;
-            margin: 10px 0;
+        .theory-card {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
         }
-        input[type=range]:focus { outline: none; }
-        
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            height: 20px; width: 20px;
-            border-radius: 50%;
-            background: var(--primary);
-            cursor: pointer;
-            margin-top: -8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        .theory-head {
+            background: var(--theory-head); padding: 12px 20px; font-weight: 800; color: var(--primary);
+            text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); font-size: 0.9rem;
         }
+        .theory-body { padding: 20px; }
         
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px;
-            cursor: pointer;
-            background: var(--slider-track);
-            border-radius: 2px;
+        .formula-item { margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+        .formula-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        
+        .f-name { font-weight: 700; font-size: 0.95rem; margin-bottom: 5px; color: var(--text-main); }
+        .f-math {
+            background: var(--code-bg); padding: 10px; border-radius: 6px;
+            text-align: center; overflow-x: auto; margin: 8px 0; border-left: 3px solid var(--primary);
         }
 
-        /* Buttons */
-        .btn {
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            white-space: nowrap;
+        /* --- SIMULATION CARDS --- */
+        .sim-card {
+            background: var(--bg-card); border-radius: 16px; padding: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border);
+            margin-bottom: 40px;
         }
-        .btn:active { transform: translateY(1px); box-shadow: none; }
         
-        .btn-play { background-color: var(--success); color: white; }
-        .btn-pause { background-color: var(--accent); color: white; }
-        .btn-reset { background-color: var(--btn-reset); color: white; }
-
-        /* --- Simulation Panels --- */
         .sim-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 15px;
-            flex-wrap: wrap; /* Allow wrapping on small screens */
-            gap: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px;
+            flex-wrap: wrap; gap: 15px;
         }
-        .sim-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .controls-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
-            gap: 20px;
-            background: var(--bg-body);
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            border: 1px solid var(--border);
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            min-width: 0; /* Prevents flex items from overflowing */
-        }
+        .sim-title { font-size: 1.25rem; font-weight: 700; color: var(--primary); }
         
-        .control-label {
-            font-size: 0.8rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            display: flex;
-            justify-content: space-between;
+        .controls {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px; background: var(--bg-body); padding: 20px;
+            border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border);
         }
-        .value-display { color: var(--text-main); }
+        .ctrl-grp { display: flex; flex-direction: column; gap: 8px; }
+        .ctrl-lbl { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); display: flex; justify-content: space-between; }
+        .ctrl-val { color: var(--text-main); font-family: monospace; font-weight: 700; }
 
-        /* --- Charts --- */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; cursor: pointer; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 18px; width: 18px; border-radius: 50%;
+            background: var(--primary); margin-top: -7px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; background: #b2bec3; border-radius: 2px;
+        }
+
+        .btn {
+            border: none; padding: 10px 24px; border-radius: 8px; font-weight: 700;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+            transition: all 0.2s; color: white; white-space: nowrap; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .btn-play { background: var(--success); }
+        .btn-pause { background: var(--accent); }
+        .btn-reset { background: var(--text-muted); }
+
         .chart-container {
             position: relative;
-            height: 300px;
+            height: 320px;
             width: 100%;
             background: var(--bg-card);
-            border-radius: 8px;
-            overflow: hidden; /* Clips content inside */
         }
-        
-        .grid-split {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-        /* --- Tables --- */
-        .table-wrap {
-            width: 100%;
-            overflow-x: auto; /* Internal scroll only */
-            -webkit-overflow-scrolling: touch;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-        table { width: 100%; border-collapse: collapse; min-width: 600px; }
-        th { background-color: var(--table-head); color: var(--text-main); font-weight: 700; text-align: left; padding: 12px 15px; }
-        td { border-bottom: 1px solid var(--border); padding: 12px 15px; color: var(--text-muted); font-size: 0.9rem; }
-        tr:last-child td { border-bottom: none; }
-
-        /* --- Math Box --- */
-        .math-box {
-            background-color: var(--bg-body);
-            border-left: 4px solid var(--primary);
-            padding: 15px;
-            border-radius: 0 8px 8px 0;
-            font-size: 0.9rem;
-            overflow-x: auto; /* Allow equations to scroll if too long */
-        }
-
-        /* --- Mobile Responsive Tweaks --- */
-        @media (max-width: 768px) {
-            .grid-split { grid-template-columns: 1fr; }
-            .chart-container { height: 250px; }
-            .sim-header { flex-direction: column; align-items: flex-start; }
-            .sim-header .btn { width: 100%; } /* Full width buttons on mobile */
-            header { padding: 0.8rem 1rem; }
-            .controls-grid { grid-template-columns: 1fr; padding: 15px; }
-            h2 { font-size: 1.2rem; }
+        @media (max-width: 800px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .theory-grid { grid-template-columns: 1fr; }
+            .chart-container { height: 260px; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo-container" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Scroll to Top">
+    <div class="logo-container" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
         <div class="logo-icon">Σ</div>
         <div class="logo-text">
             <h1>StochasticBench</h1>
@@ -331,152 +190,258 @@
         </div>
     </div>
     <button class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-icon">🌙</span> Mode
+        <span id="theme-icon">🌙</span> Dark Mode
     </button>
 </header>
+
+<div class="header-spacer"></div>
 
 <div class="container">
 
     <section>
-        <h2>Definitions & Formulas</h2>
-        <div class="card" style="padding: 0; overflow: hidden;">
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Symbol</th>
-                            <th>Name</th>
-                            <th>Formula</th>
-                            <th>Physical Interpretation</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>$m_\xi$</td><td>Mean (DC)</td><td>$E[\xi(t)]$</td><td>Static offset / Zero-frequency component.</td></tr>
-                        <tr><td>$R_{\xi\xi}(\tau)$</td><td>Autocorrelation</td><td>$E[\xi(t)\xi(t+\tau)]$</td><td>Self-similarity over time shift $\tau$.</td></tr>
-                        <tr><td>$C_{\xi\xi}(\tau)$</td><td>Autocovariance</td><td>$R_{\xi\xi}(\tau) - |m_\xi|^2$</td><td>Power of AC fluctuations only.</td></tr>
-                        <tr><td>$r_{\xi\eta}$</td><td>Corr. Coefficient</td><td>$C_{\xi\eta} / (\sigma_\xi \sigma_\eta)$</td><td>Normalized dependence.</td></tr>
-                        <tr><td>$S_{XX}(f)$</td><td>PSD</td><td>$\mathcal{F}\{R_{\xi\xi}(\tau)\}$</td><td>Power distribution across frequencies.</td></tr>
-                    </tbody>
-                </table>
+        <h2>Master Notation & Theoretical Reference</h2>
+        <div class="theory-grid">
+
+            <div class="theory-card">
+                <div class="theory-head">I. Probability & Random Variables</div>
+                <div class="theory-body">
+                    <div class="formula-item">
+                        <div class="f-name">Probability Density Function (PDF)</div>
+                        <div class="f-math">$$ \int_{-\infty}^{\infty} f_X(x)dx = 1, \quad P(a \le X \le b) = \int_a^b f_X(x)dx $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Expectation (Mean)</div>
+                        <div class="f-math">$$ m_X = E[X] = \int_{-\infty}^{\infty} x f_X(x)dx $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Variance (AC Power)</div>
+                        <div class="f-math">$$ \sigma_X^2 = E[(X-m_X)^2] = E[X^2] - m_X^2 $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Characteristic Function</div>
+                        <div class="f-math">$$ \Phi_X(\omega) = E[e^{j\omega X}] = \int_{-\infty}^{\infty} f_X(x)e^{j\omega x}dx $$</div>
+                    </div>
+                </div>
             </div>
+
+            <div class="theory-card">
+                <div class="theory-head">II. Joint Statistics (Two Variables)</div>
+                <div class="theory-body">
+                    <div class="formula-item">
+                        <div class="f-name">Joint Expectation (Correlation)</div>
+                        <div class="f-math">$$ E[XY] = R_{XY} = \iint xy f_{XY}(x,y) dx dy $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Covariance</div>
+                        <div class="f-math">$$ C_{XY} = E[(X-m_X)(Y-m_Y)] = R_{XY} - m_X m_Y $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Correlation Coefficient</div>
+                        <div class="f-math">$$ r_{XY} = \frac{C_{XY}}{\sigma_X \sigma_Y}, \quad -1 \le r \le 1 $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Independence Condition</div>
+                        <div class="f-math">$$ f_{XY}(x,y) = f_X(x)f_Y(y) \implies E[XY] = E[X]E[Y] $$</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theory-card">
+                <div class="theory-head">III. Stochastic Processes (Time)</div>
+                <div class="theory-body">
+                    <div class="formula-item">
+                        <div class="f-name">Mean Function</div>
+                        <div class="f-math">$$ m_\xi(t) = E[\xi(t)] $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Autocorrelation Function (ACF)</div>
+                        <div class="f-math">$$ R_{\xi\xi}(t_1, t_2) = E[\xi(t_1)\xi^*(t_2)] $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Wide-Sense Stationarity (WSS)</div>
+                        <div class="f-math">$$ 1.\ m_\xi(t) = \text{const} \quad 2.\ R_{\xi\xi}(t, t+\tau) = R_{\xi\xi}(\tau) $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Total Average Power</div>
+                        <div class="f-math">$$ P_{avg} = R_{\xi\xi}(0) = E[|\xi(t)|^2] = \sigma_\xi^2 + |m_\xi|^2 $$</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theory-card">
+                <div class="theory-head">IV. Spectral Analysis</div>
+                <div class="theory-body">
+                    <div class="formula-item">
+                        <div class="f-name">Wiener-Khinchin Theorem</div>
+                        <div class="f-math">$$ S_{XX}(f) = \mathcal{F}\{R_{XX}(\tau)\} = \int_{-\infty}^{\infty} R_{XX}(\tau)e^{-j2\pi f \tau}d\tau $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Properties of PSD</div>
+                        <div class="f-math">$$ S_{XX}(f) \ge 0, \quad S_{XX}(f) = S_{XX}(-f) \ (\text{real signals}) $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Power from PSD</div>
+                        <div class="f-math">$$ P_{avg} = \int_{-\infty}^{\infty} S_{XX}(f) df = R_{XX}(0) $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">White Noise</div>
+                        <div class="f-math">$$ S_{NN}(f) = \frac{N_0}{2}, \quad R_{NN}(\tau) = \frac{N_0}{2}\delta(\tau) $$</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theory-card">
+                <div class="theory-head">V. LTI Systems Response</div>
+                <div class="theory-body">
+                    <div class="formula-item">
+                        <div class="f-name">Input-Output PSD Relation</div>
+                        <div class="f-math">$$ S_{YY}(f) = |H(f)|^2 S_{XX}(f) $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Input-Output Cross-Correlation</div>
+                        <div class="f-math">$$ R_{YX}(\tau) = h(\tau) * R_{XX}(\tau) $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Output Mean</div>
+                        <div class="f-math">$$ m_Y = m_X \cdot H(0) $$</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="theory-card">
+                <div class="theory-head">VI. Ergodicity</div>
+                <div class="theory-body">
+                    <div class="formula-item">
+                        <div class="f-name">Ergodicity in the Mean</div>
+                        <div class="f-math">$$ \lim_{T \to \infty} \frac{1}{2T} \int_{-T}^{T} \xi(t) dt = E[\xi] $$</div>
+                    </div>
+                    <div class="formula-item">
+                        <div class="f-name">Ergodicity in Autocorrelation</div>
+                        <div class="f-math">$$ \lim_{T \to \infty} \frac{1}{2T} \int_{-T}^{T} \xi(t)\xi(t+\tau) dt = R_{\xi\xi}(\tau) $$</div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 
     <section>
-        <div class="card">
+        <div class="sim-card">
             <div class="sim-header">
-                <p class="sim-title">1. Signal Decomposition (Oscilloscope)</p>
+                <div class="sim-title">1. Signal Decomposition (Oscilloscope)</div>
                 <button class="btn btn-play" id="btn-sim1" onclick="toggleSim1()">▶ Play Trace</button>
             </div>
             
-            <div class="controls-grid">
-                <div class="control-group">
-                    <div class="control-label">DC Offset ($m$) <span id="val-dc" class="value-display">0.0V</span></div>
+            <div class="controls">
+                <div class="ctrl-grp">
+                    <div class="ctrl-lbl">DC Offset ($m$) <span id="val-dc" class="ctrl-val">0.0V</span></div>
                     <input type="range" id="slider-dc" min="-5" max="5" step="0.5" value="0">
                 </div>
-                <div class="control-group">
-                    <div class="control-label">AC Variance ($\sigma^2$) <span id="val-var" class="value-display">1.0V²</span></div>
+                <div class="ctrl-grp">
+                    <div class="ctrl-lbl">AC Variance ($\sigma^2$) <span id="val-var" class="ctrl-val">1.0V²</span></div>
                     <input type="range" id="slider-var" min="0.1" max="5" step="0.1" value="1">
                 </div>
-                <div class="control-group">
-                    <div class="control-label">Sweep Speed</div>
+                <div class="ctrl-grp">
+                    <div class="ctrl-lbl">Sweep Speed</div>
                     <input type="range" id="speed-sim1" min="1" max="10" value="3">
                 </div>
             </div>
             
             <div class="chart-container">
-                <canvas id="chart-decomp"></canvas>
+                <canvas id="chart-decomp" style="width:100%; height:100%;"></canvas>
             </div>
         </div>
     </section>
 
     <section>
-        <div class="card">
+        <div class="sim-card">
             <div class="sim-header">
-                <p class="sim-title">2. Correlation Scanner (Convolution)</p>
+                <div class="sim-title">2. Correlation Scanner (Convolution)</div>
                 <button class="btn btn-play" id="btn-sim2" onclick="toggleSim2()">▶ Start Scan</button>
             </div>
             
-            <div class="controls-grid">
-                <div class="control-group">
-                    <div class="control-label">Time Shift ($\tau$) <span id="val-tau" class="value-display">0 ms</span></div>
+            <div class="controls">
+                <div class="ctrl-grp">
+                    <div class="ctrl-lbl">Time Shift ($\tau$) <span id="val-tau" class="ctrl-val">0 ms</span></div>
                     <input type="range" id="slider-tau" min="-50" max="50" step="1" value="0">
                 </div>
-                <div class="control-group">
-                    <div class="control-label">Scan Speed</div>
+                <div class="ctrl-grp">
+                    <div class="ctrl-lbl">Scan Speed</div>
                     <input type="range" id="speed-sim2" min="1" max="10" value="3">
                 </div>
             </div>
-
-            <div class="grid-split">
+            
+            <div class="grid-2">
                 <div class="chart-container">
-                    <canvas id="chart-signals"></canvas>
+                    <canvas id="chart-signals" style="width:100%; height:100%;"></canvas>
                 </div>
                 <div class="chart-container">
-                    <canvas id="chart-corr"></canvas>
+                    <canvas id="chart-corr" style="width:100%; height:100%;"></canvas>
                 </div>
             </div>
         </div>
     </section>
 
     <section>
-        <div class="card">
+        <div class="sim-card">
             <div class="sim-header">
-                <p class="sim-title">3. LTI Spectral Analysis (PSD)</p>
+                <div class="sim-title">3. LTI Spectral Analysis (PSD)</div>
                 <button class="btn btn-play" id="btn-sim3" onclick="toggleSim3()">▶ Auto Sweep</button>
             </div>
-
-            <div class="controls-grid">
-                <div class="control-group">
-                    <div class="control-label">Cutoff Freq ($f_c$) <span id="val-fc" class="value-display">5.0 Hz</span></div>
+            
+            <div class="controls">
+                <div class="ctrl-grp">
+                    <div class="ctrl-lbl">Cutoff Freq ($f_c$) <span id="val-fc" class="ctrl-val">5.0 Hz</span></div>
                     <input type="range" id="slider-fc" min="1" max="20" step="0.1" value="5">
                 </div>
-                <div class="control-group">
-                    <div class="control-label">Sweep Speed</div>
+                <div class="ctrl-grp">
+                    <div class="ctrl-lbl">Sweep Speed</div>
                     <input type="range" id="speed-sim3" min="1" max="10" value="3">
                 </div>
             </div>
-
+            
             <div class="chart-container">
-                <canvas id="chart-lti"></canvas>
+                <canvas id="chart-lti" style="width:100%; height:100%;"></canvas>
             </div>
         </div>
     </section>
 
     <section>
-        <div class="card">
+        <div class="sim-card">
             <div class="sim-header">
-                <p class="sim-title">4. PDF Convergence (Law of Large Numbers)</p>
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <button class="btn btn-reset" style="flex: 1;" onclick="resetSim4()">↺ Reset</button>
-                    <button class="btn btn-play" style="flex: 2;" id="btn-sim4" onclick="toggleSim4()">▶ Run</button>
+                <div class="sim-title">4. PDF Convergence (Law of Large Numbers)</div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-reset" onclick="resetSim4()">↺ Reset</button>
+                    <button class="btn btn-play" id="btn-sim4" onclick="toggleSim4()">▶ Run</button>
                 </div>
             </div>
-
-            <div class="controls-grid">
-                <div class="control-group">
-                    <div class="control-label">Sampling Speed</div>
+            
+            <div class="controls">
+                <div class="ctrl-grp">
+                    <div class="ctrl-lbl">Sampling Rate</div>
                     <input type="range" id="speed-sim4" min="1" max="10" value="3">
                 </div>
             </div>
-
+            
             <div class="chart-container">
-                <canvas id="chart-pdf"></canvas>
+                <canvas id="chart-pdf" style="width:100%; height:100%;"></canvas>
             </div>
-            <p style="text-align: center; margin-top: 15px; color: var(--text-muted); font-size: 0.9rem;">
-                Samples Collected: <strong style="color: var(--text-main); font-size: 1.1rem;" id="sample-count">0</strong>
-            </p>
+            <p style="text-align: center; margin-top: 15px; color: var(--text-muted);">Samples: <strong id="sample-count" style="color:var(--text-main)">0</strong></p>
         </div>
     </section>
 
     <section>
-        <h2>Solved Problems</h2>
-        <div class="card">
-            <h3>Problem 1: RC Low-Pass Output Power</h3>
-            <p style="color: var(--text-muted); margin-bottom: 10px;">Calculate total output power $P_{out}$ given white noise input $N_0/2$.</p>
-            <div class="math-box">
+        <h2>Solved Problem</h2>
+        <div class="sim-card">
+            <h3 style="margin-top:0; color:var(--primary);">RC Low-Pass Filter Power Calculation</h3>
+            <p style="color: var(--text-muted); margin-bottom: 20px;">Calculate the total output power $P_{out}$ when White Noise ($S_{XX}(f) = N_0/2$) passes through $H(f) = \frac{1}{1 + j2\pi f RC}$.</p>
+            
+            <div style="background: var(--code-bg); padding: 25px; border-radius: 8px; border-left: 4px solid var(--primary); overflow-x: auto;">
+                $$ S_{YY}(f) = |H(f)|^2 S_{XX}(f) = \frac{N_0}{2} \cdot \frac{1}{1 + (2\pi f RC)^2} $$
+                <hr style="border:0; border-top:1px solid rgba(0,0,0,0.1); margin: 15px 0;">
                 $$ P_{out} = \int_{-\infty}^{\infty} S_{YY}(f) df = \frac{N_0}{2} \int_{-\infty}^{\infty} \frac{1}{1 + (2\pi f RC)^2} df $$
-                $$ \text{Result: } P_{out} = \frac{N_0}{4RC} $$
+                $$ \text{Using standard integral } \int \frac{dx}{1+x^2} = \arctan x: $$
+                $$ P_{out} = \frac{N_0}{4RC} $$
             </div>
         </div>
     </section>
@@ -484,21 +449,13 @@
 </div>
 
 <script>
-    // --- Configuration ---
+    // --- Global Config ---
     Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
-    Chart.defaults.font.size = 11;
     Chart.defaults.maintainAspectRatio = false;
-    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+    Chart.defaults.responsive = true;
 
-    // --- Physics Engine (Box-Muller) ---
-    function randn_bm() {
-        let u = 0, v = 0;
-        while(u === 0) u = Math.random(); 
-        while(v === 0) v = Math.random();
-        return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-    }
-
-    // --- State Management ---
+    // --- State & Globals ---
+    let chart1, chart2a, chart2b, chart3, chart4;
     const state = {
         sim1: { active: false, lastTime: 0 },
         sim2: { active: false, dir: 1, lastTime: 0 },
@@ -506,64 +463,74 @@
         sim4: { active: false, bins: new Array(60).fill(0), count: 0, lastTime: 0 }
     };
 
-    // --- Sim 1: Decomposition ---
-    const ctx1 = document.getElementById('chart-decomp').getContext('2d');
-    const dataLen = 150;
-    const bufTotal = Array.from({length: dataLen}, () => randn_bm());
-    const bufDC = new Array(dataLen).fill(0);
-    const bufAC = [...bufTotal];
-    
-    const chart1 = new Chart(ctx1, {
-        type: 'line',
-        data: {
-            labels: new Array(dataLen).fill(''),
-            datasets: [
-                { label: 'Total Signal', borderColor: '#007bff', borderWidth: 2, data: bufTotal, pointRadius: 0, tension: 0.3 },
-                { label: 'DC Component', borderColor: '#e74c3c', borderDash: [6,4], borderWidth: 2, data: bufDC, pointRadius: 0 },
-                { label: 'AC Noise', borderColor: '#2ecc71', borderWidth: 1, data: bufAC, pointRadius: 0 }
-            ]
-        },
-        options: {
-            animation: false, interaction: {mode: 'none'},
-            scales: { y: { min: -8, max: 8 }, x: { display: false } },
-            elements: { line: { tension: 0.3 } }
-        }
+    function randn_bm() {
+        let u = 0, v = 0;
+        while(u === 0) u = Math.random(); 
+        while(v === 0) v = Math.random();
+        return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    }
+
+    // --- Initialization ---
+    window.addEventListener('load', () => {
+        initSim1();
+        initSim2();
+        initSim3();
+        initSim4();
     });
+
+    // --- Sim 1 Logic ---
+    function initSim1() {
+        const ctx = document.getElementById('chart-decomp').getContext('2d');
+        const dataLen = 150;
+        const bufTotal = Array(dataLen).fill(0).map(()=>randn_bm());
+        const bufDC = Array(dataLen).fill(0);
+        const bufAC = [...bufTotal];
+
+        chart1 = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: Array(dataLen).fill(''),
+                datasets: [
+                    { label: 'Total Signal ξ(t)', borderColor: '#0d6efd', borderWidth: 2, data: bufTotal, pointRadius: 0, tension: 0.3 },
+                    { label: 'DC Component m', borderColor: '#dc3545', borderDash: [6,4], borderWidth: 2, data: bufDC, pointRadius: 0 },
+                    { label: 'AC Noise', borderColor: '#198754', borderWidth: 1, data: bufAC, pointRadius: 0 }
+                ]
+            },
+            options: { animation: false, scales: { y: { min: -8, max: 8 }, x: { display: false } } }
+        });
+    }
 
     function loopSim1(timestamp) {
         if (!state.sim1.active) return;
-        
         const speed = parseInt(document.getElementById('speed-sim1').value);
-        if (timestamp - state.sim1.lastTime < (1000 / (speed * 4))) {
-            requestAnimationFrame(loopSim1); return;
-        }
+        if(timestamp - state.sim1.lastTime < (1000/(speed*4))) { requestAnimationFrame(loopSim1); return; }
         state.sim1.lastTime = timestamp;
 
-        const mean = parseFloat(document.getElementById('slider-dc').value);
-        const variance = parseFloat(document.getElementById('slider-var').value);
-        
-        document.getElementById('val-dc').textContent = mean.toFixed(1) + "V";
-        document.getElementById('val-var').textContent = variance.toFixed(1) + "V²";
+        const m = parseFloat(document.getElementById('slider-dc').value);
+        const v = parseFloat(document.getElementById('slider-var').value);
+        document.getElementById('val-dc').textContent = m.toFixed(1) + "V";
+        document.getElementById('val-var').textContent = v.toFixed(1) + "V²";
 
-        bufTotal.shift(); bufDC.shift(); bufAC.shift();
-        const acVal = randn_bm() * Math.sqrt(variance);
-        bufAC.push(acVal);
-        bufDC.push(mean);
-        bufTotal.push(mean + acVal);
+        // Access datasets via chart1 instance
+        const ds = chart1.data.datasets;
+        ds[0].data.shift(); ds[1].data.shift(); ds[2].data.shift();
+        
+        const ac = randn_bm() * Math.sqrt(v);
+        ds[2].data.push(ac);
+        ds[1].data.push(m);
+        ds[0].data.push(m + ac);
         
         chart1.update('none');
         requestAnimationFrame(loopSim1);
     }
 
-    // --- Sim 2: Correlation ---
-    const ctx2a = document.getElementById('chart-signals').getContext('2d');
-    const ctx2b = document.getElementById('chart-corr').getContext('2d');
+    // --- Sim 2 Logic ---
     const S2_len = 120;
     const s_base1 = Array.from({length: S2_len}, (_, i) => Math.sin(i*0.15) * Math.exp(-0.02*Math.abs(i-60)));
     const s_base2 = [...s_base1];
-    
-    // Precalc
     const corr_vals = [];
+
+    // Precalc
     for(let tau = -50; tau <= 50; tau++) {
         let sum = 0;
         for(let t=0; t<S2_len; t++) {
@@ -573,29 +540,35 @@
         corr_vals.push(sum/20);
     }
 
-    const chart2a = new Chart(ctx2a, {
-        type: 'line',
-        data: {
-            labels: Array(S2_len).fill(''),
-            datasets: [
-                { label: 'Signal 1', borderColor: '#007bff', data: s_base1, pointRadius: 0, borderWidth: 2 },
-                { label: 'Signal 2 (Shifted)', borderColor: '#ff9f43', data: [], pointRadius: 0, borderWidth: 2 }
-            ]
-        },
-        options: { animation: false, scales: { x: {display:false}, y: {min: -1.5, max: 1.5} } }
-    });
+    function initSim2() {
+        const ctxA = document.getElementById('chart-signals').getContext('2d');
+        const ctxB = document.getElementById('chart-corr').getContext('2d');
 
-    const chart2b = new Chart(ctx2b, {
-        type: 'line',
-        data: {
-            labels: Array.from({length: 101}, (_,i)=>i-50),
-            datasets: [
-                { label: 'Correlation R(τ)', borderColor: '#9b59b6', data: corr_vals, pointRadius: 0, borderWidth: 2, fill: true, backgroundColor: 'rgba(155, 89, 182, 0.1)' },
-                { label: 'Current', backgroundColor: '#e74c3c', data: [], pointRadius: 6, type: 'scatter' }
-            ]
-        },
-        options: { animation: false }
-    });
+        chart2a = new Chart(ctxA, {
+            type: 'line',
+            data: {
+                labels: Array(S2_len).fill(''),
+                datasets: [
+                    { label: 'Signal ξ(t)', borderColor: '#0d6efd', data: s_base1, pointRadius: 0, borderWidth: 2 },
+                    { label: 'Shifted η(t+τ)', borderColor: '#fd7e14', data: [], pointRadius: 0, borderWidth: 2 }
+                ]
+            },
+            options: { animation: false, scales: { x: {display:false}, y: {min: -1.5, max: 1.5} } }
+        });
+
+        chart2b = new Chart(ctxB, {
+            type: 'line',
+            data: {
+                labels: Array.from({length: 101}, (_,i)=>i-50),
+                datasets: [
+                    { label: 'Correlation R(τ)', borderColor: '#6f42c1', data: corr_vals, pointRadius: 0, borderWidth: 2, fill: true, backgroundColor: 'rgba(111, 66, 193, 0.1)' },
+                    { label: 'Current τ', backgroundColor: '#dc3545', data: [], pointRadius: 6, type: 'scatter' }
+                ]
+            },
+            options: { animation: false }
+        });
+        updateSim2UI(0);
+    }
 
     function updateSim2UI(tau) {
         document.getElementById('val-tau').textContent = tau + " ms";
@@ -610,7 +583,8 @@
         dot[tau+50] = corr_vals[tau+50];
         chart2b.data.datasets[1].data = dot;
         
-        chart2a.update('none'); chart2b.update('none');
+        chart2a.update('none'); 
+        chart2b.update('none');
     }
 
     function loopSim2(timestamp) {
@@ -630,21 +604,31 @@
         requestAnimationFrame(loopSim2);
     }
 
-    // --- Sim 3: PSD ---
-    const ctx3 = document.getElementById('chart-lti').getContext('2d');
+    // --- Sim 3 Logic ---
     const f_axis = Array.from({length: 200}, (_,i) => i * (30/200));
     
-    const chart3 = new Chart(ctx3, {
-        type: 'line',
-        data: {
-            labels: f_axis.map(f=>f.toFixed(1)),
-            datasets: [
-                { label: 'Input Noise', borderColor: '#adb5bd', borderDash: [5,5], data: Array(200).fill(10), pointRadius:0 },
-                { label: 'Output PSD', borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.2)', fill: true, data: [], pointRadius:0, borderWidth: 2 }
-            ]
-        },
-        options: { animation: false, scales: { y: {beginAtZero: true, max: 12}, x: {ticks: {maxTicksLimit: 10}} } }
-    });
+    function initSim3() {
+        const ctx = document.getElementById('chart-lti').getContext('2d');
+        chart3 = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: f_axis.map(f=>f.toFixed(1)),
+                datasets: [
+                    { label: 'Input Noise', borderColor: '#adb5bd', borderDash: [5,5], data: Array(200).fill(10), pointRadius:0 },
+                    { label: 'Output PSD', borderColor: '#198754', backgroundColor: 'rgba(25, 135, 84, 0.2)', fill: true, data: [], pointRadius:0, borderWidth: 2 }
+                ]
+            },
+            options: { animation: false, scales: { y: {beginAtZero: true, max: 12}, x: {ticks: {maxTicksLimit: 10}} } }
+        });
+        updateSim3(5.0);
+    }
+
+    function updateSim3(fc) {
+        document.getElementById('val-fc').textContent = fc.toFixed(1) + " Hz";
+        const psd = f_axis.map(f => 10 / (1 + Math.pow(f/fc, 2)));
+        chart3.data.datasets[1].data = psd;
+        chart3.update('none');
+    }
 
     function loopSim3(timestamp) {
         if (!state.sim3.active) return;
@@ -659,30 +643,28 @@
         if (fc <= 1) { fc = 1; state.sim3.dir = 1; }
         
         slider.value = fc;
-        document.getElementById('val-fc').textContent = fc.toFixed(1) + " Hz";
-        
-        const psd = f_axis.map(f => 10 / (1 + Math.pow(f/fc, 2)));
-        chart3.data.datasets[1].data = psd;
-        chart3.update('none');
+        updateSim3(fc);
         requestAnimationFrame(loopSim3);
     }
 
-    // --- Sim 4: PDF ---
-    const ctx4 = document.getElementById('chart-pdf').getContext('2d');
-    const x_bins = Array.from({length: 60}, (_,i) => -4 + i*(8/60));
-    const y_theory = x_bins.map(x => (1/Math.sqrt(2*Math.PI)) * Math.exp(-0.5*x*x));
+    // --- Sim 4 Logic ---
+    function initSim4() {
+        const ctx = document.getElementById('chart-pdf').getContext('2d');
+        const x_bins = Array.from({length: 60}, (_,i) => -4 + i*(8/60));
+        const y_theory = x_bins.map(x => (1/Math.sqrt(2*Math.PI)) * Math.exp(-0.5*x*x));
 
-    const chart4 = new Chart(ctx4, {
-        type: 'bar',
-        data: {
-            labels: x_bins.map(v=>v.toFixed(1)),
-            datasets: [
-                { type: 'line', label: 'Gaussian Theory', borderColor: '#e74c3c', borderWidth: 2, data: y_theory, pointRadius:0 },
-                { label: 'Histogram', backgroundColor: '#007bff', data: new Array(60).fill(0) }
-            ]
-        },
-        options: { animation: false, scales: { x: {display:false}, y: {beginAtZero:true} } }
-    });
+        chart4 = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: x_bins.map(v=>v.toFixed(1)),
+                datasets: [
+                    { type: 'line', label: 'Gaussian Theory', borderColor: '#dc3545', borderWidth: 2, data: y_theory, pointRadius:0 },
+                    { label: 'Histogram', backgroundColor: '#0d6efd', data: new Array(60).fill(0) }
+                ]
+            },
+            options: { animation: false, scales: { x: {display:false}, y: {beginAtZero:true} } }
+        });
+    }
 
     function loopSim4(timestamp) {
         if (!state.sim4.active) return;
@@ -698,21 +680,17 @@
         }
         
         document.getElementById('sample-count').textContent = state.sim4.count.toLocaleString();
-        
         const area = state.sim4.count * (8/60);
         chart4.data.datasets[1].data = state.sim4.bins.map(b => b/area);
         chart4.update('none');
         requestAnimationFrame(loopSim4);
     }
 
-    // --- Event Listeners & Theme ---
+    // --- UI Helpers ---
     function updateBtn(id, active, txt="Play") {
         const btn = document.getElementById(id);
-        if (active) {
-            btn.innerHTML = "❚❚ Pause"; btn.className = "btn btn-pause";
-        } else {
-            btn.innerHTML = "▶ " + txt; btn.className = "btn btn-play";
-        }
+        if (active) { btn.innerHTML = "❚❚ Pause"; btn.className = "btn btn-pause"; }
+        else { btn.innerHTML = "▶ " + txt; btn.className = "btn btn-play"; }
     }
 
     function toggleSim1() { state.sim1.active = !state.sim1.active; updateBtn('btn-sim1', state.sim1.active, "Play Trace"); if(state.sim1.active) requestAnimationFrame(loopSim1); }
@@ -727,48 +705,32 @@
         document.getElementById('sample-count').textContent = "0";
     }
 
-    document.getElementById('slider-tau').addEventListener('input', (e) => {
-        if(state.sim2.active) toggleSim2();
-        updateSim2UI(parseInt(e.target.value));
-    });
-    
-    document.getElementById('slider-fc').addEventListener('input', (e) => {
-        if(state.sim3.active) toggleSim3();
-        let val = parseFloat(e.target.value);
-        document.getElementById('val-fc').textContent = val.toFixed(1) + " Hz";
-        const psd = f_axis.map(f => 10 / (1 + Math.pow(f/val, 2)));
-        chart3.data.datasets[1].data = psd;
-        chart3.update('none');
-    });
-
-    // Theme Logic
     function toggleTheme() {
         document.body.classList.toggle('dark-mode');
         const isDark = document.body.classList.contains('dark-mode');
         document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙';
+        const c = isDark ? '#ccc' : '#666';
+        const g = isDark ? '#333' : '#eee';
         
-        // Update Chart Colors
-        const gridC = isDark ? '#333' : '#eee';
-        const textC = isDark ? '#aaa' : '#666';
-        
-        [chart1, chart2a, chart2b, chart3, chart4].forEach(c => {
-            if(c) {
-                c.options.scales.x.grid.color = gridC;
-                c.options.scales.y.grid.color = gridC;
-                c.options.scales.x.ticks.color = textC;
-                c.options.scales.y.ticks.color = textC;
-                c.options.plugins.legend.labels.color = textC;
-                c.update();
+        [chart1, chart2a, chart2b, chart3, chart4].forEach(chart => {
+            if(chart) {
+                chart.options.scales.x.grid.color = g;
+                chart.options.scales.y.grid.color = g;
+                chart.options.scales.x.ticks.color = c;
+                chart.options.scales.y.ticks.color = c;
+                chart.options.plugins.legend.labels.color = c;
+                chart.update();
             }
         });
     }
 
-    // Init
-    updateSim2UI(0);
-    // Init Chart 3
-    const initFC = 5.0;
-    chart3.data.datasets[1].data = f_axis.map(f => 10 / (1 + Math.pow(f/initFC, 2)));
-    chart3.update();
+    // Slider Listeners
+    document.getElementById('slider-tau').addEventListener('input', (e)=>{
+        if(state.sim2.active) toggleSim2(); updateSim2UI(parseInt(e.target.value));
+    });
+    document.getElementById('slider-fc').addEventListener('input', (e)=>{
+        if(state.sim3.active) toggleSim3(); updateSim3(parseFloat(e.target.value));
+    });
 
 </script>
 </body>
