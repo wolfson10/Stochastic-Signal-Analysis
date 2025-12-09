@@ -38,7 +38,6 @@
             --slider-track: #e4e6eb;
             --chart-grid: #f0f0f0;
             --chart-text: #666;
-            --crt-glow: 0 0 10px rgba(0, 123, 255, 0.3);
         }
 
         body.dark-mode {
@@ -59,14 +58,21 @@
             --slider-track: #3a3b3c;
             --chart-grid: #333;
             --chart-text: #aaa;
-            --crt-glow: 0 0 12px rgba(61, 139, 253, 0.5);
         }
 
-        body {
+        /* --- GLOBAL RESET & MOBILE FIXES --- */
+        * {
+            box-sizing: border-box; /* Crucial for mobile sizing */
+        }
+
+        html, body {
+            width: 100%;
+            overflow-x: hidden; /* Force hide horizontal scrollbar */
+            margin: 0; 
+            padding: 0;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
-            margin: 0; padding: 0;
             transition: background-color 0.3s, color 0.3s;
             line-height: 1.6;
             -webkit-font-smoothing: antialiased;
@@ -75,7 +81,7 @@
         /* --- Navigation / Header --- */
         header {
             background-color: var(--header-bg);
-            padding: 0.8rem 2rem;
+            padding: 0.8rem 1.5rem; /* Reduced padding for mobile */
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -84,12 +90,13 @@
             justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(10px);
+            width: 100%;
         }
 
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             cursor: pointer;
             transition: opacity 0.2s;
         }
@@ -105,6 +112,7 @@
             color: white;
             font-weight: bold;
             font-size: 18px;
+            flex-shrink: 0;
         }
 
         .logo-text h1 {
@@ -112,42 +120,46 @@
             font-weight: 700;
             margin: 0;
             color: var(--text-main);
+            line-height: 1.2;
         }
         .logo-text small {
             font-size: 0.75rem;
             color: var(--text-muted);
             font-weight: 500;
+            display: block;
         }
 
         .theme-toggle {
             background: transparent;
             border: 1px solid var(--border);
             color: var(--text-main);
-            padding: 8px 16px;
+            padding: 8px 12px;
             border-radius: 20px;
             cursor: pointer;
             font-weight: 600;
             font-size: 0.85rem;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             transition: all 0.2s;
+            white-space: nowrap;
         }
         .theme-toggle:hover { background-color: var(--bg-body); }
 
         /* --- Main Layout --- */
         .container {
             max-width: 1100px;
-            margin: 40px auto;
-            padding: 0 20px;
+            width: 100%;
+            margin: 30px auto;
+            padding: 0 15px; /* Ensure padding doesn't break width due to box-sizing */
             padding-bottom: 100px;
         }
 
-        section { margin-bottom: 50px; }
+        section { margin-bottom: 40px; }
 
         h2 {
             font-size: 1.4rem;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             padding-left: 15px;
             border-left: 5px solid var(--primary);
             color: var(--text-main);
@@ -156,30 +168,31 @@
         .card {
             background-color: var(--bg-card);
             border-radius: 16px;
-            padding: 24px;
+            padding: 20px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.04);
             border: 1px solid var(--border);
-            transition: transform 0.2s;
+            width: 100%; /* Ensure card fits container */
         }
         
         /* --- Interactive Components --- */
-        /* Custom Range Slider */
         input[type=range] {
             -webkit-appearance: none;
             width: 100%;
             background: transparent;
+            margin: 10px 0;
         }
+        input[type=range]:focus { outline: none; }
+        
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            height: 18px; width: 18px;
+            height: 20px; width: 20px;
             border-radius: 50%;
             background: var(--primary);
             cursor: pointer;
-            margin-top: -7px;
+            margin-top: -8px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            transition: transform 0.1s;
         }
-        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+        
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%; height: 4px;
             cursor: pointer;
@@ -190,7 +203,7 @@
         /* Buttons */
         .btn {
             border: none;
-            padding: 10px 20px;
+            padding: 10px 16px;
             border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
@@ -201,17 +214,13 @@
             font-size: 0.9rem;
             transition: all 0.2s ease;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            white-space: nowrap;
         }
         .btn:active { transform: translateY(1px); box-shadow: none; }
         
         .btn-play { background-color: var(--success); color: white; }
-        .btn-play:hover { filter: brightness(1.1); }
-        
         .btn-pause { background-color: var(--accent); color: white; }
-        .btn-pause:hover { filter: brightness(1.1); }
-        
         .btn-reset { background-color: var(--btn-reset); color: white; }
-        .btn-reset:hover { filter: brightness(1.1); }
 
         /* --- Simulation Panels --- */
         .sim-header {
@@ -221,20 +230,19 @@
             margin-bottom: 20px;
             border-bottom: 1px solid var(--border);
             padding-bottom: 15px;
+            flex-wrap: wrap; /* Allow wrapping on small screens */
+            gap: 10px;
         }
         .sim-title {
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--primary);
             margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .controls-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
             gap: 20px;
             background: var(--bg-body);
             padding: 20px;
@@ -246,8 +254,10 @@
         .control-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 5px;
+            min-width: 0; /* Prevents flex items from overflowing */
         }
+        
         .control-label {
             font-size: 0.8rem;
             font-weight: 700;
@@ -262,39 +272,51 @@
         /* --- Charts --- */
         .chart-container {
             position: relative;
-            height: 320px;
+            height: 300px;
             width: 100%;
             background: var(--bg-card);
             border-radius: 8px;
+            overflow: hidden; /* Clips content inside */
         }
         
-        /* Sim 2 Layout */
         .grid-split {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 24px;
+            gap: 20px;
         }
 
         /* --- Tables --- */
-        .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th { background-color: var(--table-head); color: var(--text-main); font-weight: 700; text-align: left; padding: 14px 18px; }
-        td { border-bottom: 1px solid var(--border); padding: 14px 18px; color: var(--text-muted); }
+        .table-wrap {
+            width: 100%;
+            overflow-x: auto; /* Internal scroll only */
+            -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        table { width: 100%; border-collapse: collapse; min-width: 600px; }
+        th { background-color: var(--table-head); color: var(--text-main); font-weight: 700; text-align: left; padding: 12px 15px; }
+        td { border-bottom: 1px solid var(--border); padding: 12px 15px; color: var(--text-muted); font-size: 0.9rem; }
         tr:last-child td { border-bottom: none; }
 
         /* --- Math Box --- */
         .math-box {
             background-color: var(--bg-body);
             border-left: 4px solid var(--primary);
-            padding: 20px;
+            padding: 15px;
             border-radius: 0 8px 8px 0;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+            overflow-x: auto; /* Allow equations to scroll if too long */
         }
 
+        /* --- Mobile Responsive Tweaks --- */
         @media (max-width: 768px) {
             .grid-split { grid-template-columns: 1fr; }
             .chart-container { height: 250px; }
+            .sim-header { flex-direction: column; align-items: flex-start; }
+            .sim-header .btn { width: 100%; } /* Full width buttons on mobile */
             header { padding: 0.8rem 1rem; }
+            .controls-grid { grid-template-columns: 1fr; padding: 15px; }
+            h2 { font-size: 1.2rem; }
         }
     </style>
 </head>
@@ -309,7 +331,7 @@
         </div>
     </div>
     <button class="theme-toggle" onclick="toggleTheme()">
-        <span id="theme-icon">🌙</span> Theme
+        <span id="theme-icon">🌙</span> Mode
     </button>
 </header>
 
@@ -317,7 +339,7 @@
 
     <section>
         <h2>Definitions & Formulas</h2>
-        <div class="card" style="padding: 0;">
+        <div class="card" style="padding: 0; overflow: hidden;">
             <div class="table-wrap">
                 <table>
                     <thead>
@@ -425,9 +447,9 @@
         <div class="card">
             <div class="sim-header">
                 <p class="sim-title">4. PDF Convergence (Law of Large Numbers)</p>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn btn-reset" onclick="resetSim4()">↺ Reset</button>
-                    <button class="btn btn-play" id="btn-sim4" onclick="toggleSim4()">▶ Run</button>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button class="btn btn-reset" style="flex: 1;" onclick="resetSim4()">↺ Reset</button>
+                    <button class="btn btn-play" style="flex: 2;" id="btn-sim4" onclick="toggleSim4()">▶ Run</button>
                 </div>
             </div>
 
@@ -451,7 +473,7 @@
         <h2>Solved Problems</h2>
         <div class="card">
             <h3>Problem 1: RC Low-Pass Output Power</h3>
-            <p style="color: var(--text-muted);">Calculate total output power $P_{out}$ given white noise input $N_0/2$.</p>
+            <p style="color: var(--text-muted); margin-bottom: 10px;">Calculate total output power $P_{out}$ given white noise input $N_0/2$.</p>
             <div class="math-box">
                 $$ P_{out} = \int_{-\infty}^{\infty} S_{YY}(f) df = \frac{N_0}{2} \int_{-\infty}^{\infty} \frac{1}{1 + (2\pi f RC)^2} df $$
                 $$ \text{Result: } P_{out} = \frac{N_0}{4RC} $$
@@ -463,11 +485,6 @@
 
 <script>
     // --- Configuration ---
-    // Update charts dynamically based on CSS variables
-    function getCSSVar(name) {
-        return getComputedStyle(document.body).getPropertyValue(name).trim();
-    }
-
     Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
     Chart.defaults.font.size = 11;
     Chart.defaults.maintainAspectRatio = false;
