@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Stochastic Signal Analysis Workbench</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']]
+      },
+      chtml: { scale: 1.05, mtextInheritFont: true },
+      options: { enableMenu: false }
+    };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        :root {
+            /* Light Theme Variables */
+            --bg-body: #f0f2f5;
+            --bg-card: #ffffff;
+            --text-main: #1c1e21;
+            --text-muted: #606770;
+            --border: #e4e6eb;
+            --primary: #007bff;
+            --primary-hover: #0056b3;
+            --accent: #e74c3c;
+            --success: #2ecc71;
+            --header-bg: #ffffff;
+            --header-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            --table-head: #f7f9fa;
+            --btn-reset: #6c757d;
+            --slider-track: #e4e6eb;
+            --chart-grid: #f0f0f0;
+            --chart-text: #666;
+            --crt-glow: 0 0 10px rgba(0, 123, 255, 0.3);
+        }
+
+        body.dark-mode {
+            /* Dark Theme Variables */
+            --bg-body: #121212;
+            --bg-card: #1e1e1e;
+            --text-main: #e4e6eb;
+            --text-muted: #b0b3b8;
+            --border: #2d2d2d;
+            --primary: #3d8bfd;
+            --primary-hover: #5a9bff;
+            --accent: #ff6b6b;
+            --success: #00b894;
+            --header-bg: #1e1e1e;
+            --header-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+            --table-head: #252525;
+            --btn-reset: #4a4a4a;
+            --slider-track: #3a3b3c;
+            --chart-grid: #333;
+            --chart-text: #aaa;
+            --crt-glow: 0 0 12px rgba(61, 139, 253, 0.5);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            margin: 0; padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Navigation / Header --- */
+        header {
+            background-color: var(--header-bg);
+            padding: 0.8rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--header-shadow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .logo-container:hover { opacity: 0.8; }
+        
+        .logo-icon {
+            width: 32px; height: 32px;
+            background: linear-gradient(135deg, var(--primary), #00d2ff);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .logo-text h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-main);
+        }
+        .logo-text small {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .theme-toggle:hover { background-color: var(--bg-body); }
+
+        /* --- Main Layout --- */
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+            padding-bottom: 100px;
+        }
+
+        section { margin-bottom: 50px; }
+
+        h2 {
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-left: 15px;
+            border-left: 5px solid var(--primary);
+            color: var(--text-main);
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+        
+        /* --- Interactive Components --- */
+        /* Custom Range Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px; width: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            margin-top: -7px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px;
+            cursor: pointer;
+            background: var(--slider-track);
+            border-radius: 2px;
+        }
+
+        /* Buttons */
+        .btn {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .btn:active { transform: translateY(1px); box-shadow: none; }
+        
+        .btn-play { background-color: var(--success); color: white; }
+        .btn-play:hover { filter: brightness(1.1); }
+        
+        .btn-pause { background-color: var(--accent); color: white; }
+        .btn-pause:hover { filter: brightness(1.1); }
+        
+        .btn-reset { background-color: var(--btn-reset); color: white; }
+        .btn-reset:hover { filter: brightness(1.1); }
+
+        /* --- Simulation Panels --- */
+        .sim-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 15px;
+        }
+        .sim-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            background: var(--bg-body);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .control-label {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+        }
+        .value-display { color: var(--text-main); }
+
+        /* --- Charts --- */
+        .chart-container {
+            position: relative;
+            height: 320px;
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: 8px;
+        }
+        
+        /* Sim 2 Layout */
+        .grid-split {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        /* --- Tables --- */
+        .table-wrap { overflow-x: auto; border-radius: 8px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th { background-color: var(--table-head); color: var(--text-main); font-weight: 700; text-align: left; padding: 14px 18px; }
+        td { border-bottom: 1px solid var(--border); padding: 14px 18px; color: var(--text-muted); }
+        tr:last-child td { border-bottom: none; }
+
+        /* --- Math Box --- */
+        .math-box {
+            background-color: var(--bg-body);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid-split { grid-template-columns: 1fr; }
+            .chart-container { height: 250px; }
+            header { padding: 0.8rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="logo-container" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="Scroll to Top">
+        <div class="logo-icon">Σ</div>
+        <div class="logo-text">
+            <h1>StochasticBench</h1>
+            <small>Signal Analysis Tools</small>
+        </div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span> Theme
+    </button>
+</header>
+
+<div class="container">
+
+    <section>
+        <h2>Definitions & Formulas</h2>
+        <div class="card" style="padding: 0;">
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Name</th>
+                            <th>Formula</th>
+                            <th>Physical Interpretation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>$m_\xi$</td><td>Mean (DC)</td><td>$E[\xi(t)]$</td><td>Static offset / Zero-frequency component.</td></tr>
+                        <tr><td>$R_{\xi\xi}(\tau)$</td><td>Autocorrelation</td><td>$E[\xi(t)\xi(t+\tau)]$</td><td>Self-similarity over time shift $\tau$.</td></tr>
+                        <tr><td>$C_{\xi\xi}(\tau)$</td><td>Autocovariance</td><td>$R_{\xi\xi}(\tau) - |m_\xi|^2$</td><td>Power of AC fluctuations only.</td></tr>
+                        <tr><td>$r_{\xi\eta}$</td><td>Corr. Coefficient</td><td>$C_{\xi\eta} / (\sigma_\xi \sigma_\eta)$</td><td>Normalized dependence.</td></tr>
+                        <tr><td>$S_{XX}(f)$</td><td>PSD</td><td>$\mathcal{F}\{R_{\xi\xi}(\tau)\}$</td><td>Power distribution across frequencies.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="card">
+            <div class="sim-header">
+                <p class="sim-title">1. Signal Decomposition (Oscilloscope)</p>
+                <button class="btn btn-play" id="btn-sim1" onclick="toggleSim1()">▶ Play Trace</button>
+            </div>
+            
+            <div class="controls-grid">
+                <div class="control-group">
+                    <div class="control-label">DC Offset ($m$) <span id="val-dc" class="value-display">0.0V</span></div>
+                    <input type="range" id="slider-dc" min="-5" max="5" step="0.5" value="0">
+                </div>
+                <div class="control-group">
+                    <div class="control-label">AC Variance ($\sigma^2$) <span id="val-var" class="value-display">1.0V²</span></div>
+                    <input type="range" id="slider-var" min="0.1" max="5" step="0.1" value="1">
+                </div>
+                <div class="control-group">
+                    <div class="control-label">Sweep Speed</div>
+                    <input type="range" id="speed-sim1" min="1" max="10" value="3">
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="chart-decomp"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="card">
+            <div class="sim-header">
+                <p class="sim-title">2. Correlation Scanner (Convolution)</p>
+                <button class="btn btn-play" id="btn-sim2" onclick="toggleSim2()">▶ Start Scan</button>
+            </div>
+            
+            <div class="controls-grid">
+                <div class="control-group">
+                    <div class="control-label">Time Shift ($\tau$) <span id="val-tau" class="value-display">0 ms</span></div>
+                    <input type="range" id="slider-tau" min="-50" max="50" step="1" value="0">
+                </div>
+                <div class="control-group">
+                    <div class="control-label">Scan Speed</div>
+                    <input type="range" id="speed-sim2" min="1" max="10" value="3">
+                </div>
+            </div>
+
+            <div class="grid-split">
+                <div class="chart-container">
+                    <canvas id="chart-signals"></canvas>
+                </div>
+                <div class="chart-container">
+                    <canvas id="chart-corr"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="card">
+            <div class="sim-header">
+                <p class="sim-title">3. LTI Spectral Analysis (PSD)</p>
+                <button class="btn btn-play" id="btn-sim3" onclick="toggleSim3()">▶ Auto Sweep</button>
+            </div>
+
+            <div class="controls-grid">
+                <div class="control-group">
+                    <div class="control-label">Cutoff Freq ($f_c$) <span id="val-fc" class="value-display">5.0 Hz</span></div>
+                    <input type="range" id="slider-fc" min="1" max="20" step="0.1" value="5">
+                </div>
+                <div class="control-group">
+                    <div class="control-label">Sweep Speed</div>
+                    <input type="range" id="speed-sim3" min="1" max="10" value="3">
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="chart-lti"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="card">
+            <div class="sim-header">
+                <p class="sim-title">4. PDF Convergence (Law of Large Numbers)</p>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-reset" onclick="resetSim4()">↺ Reset</button>
+                    <button class="btn btn-play" id="btn-sim4" onclick="toggleSim4()">▶ Run</button>
+                </div>
+            </div>
+
+            <div class="controls-grid">
+                <div class="control-group">
+                    <div class="control-label">Sampling Speed</div>
+                    <input type="range" id="speed-sim4" min="1" max="10" value="3">
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="chart-pdf"></canvas>
+            </div>
+            <p style="text-align: center; margin-top: 15px; color: var(--text-muted); font-size: 0.9rem;">
+                Samples Collected: <strong style="color: var(--text-main); font-size: 1.1rem;" id="sample-count">0</strong>
+            </p>
+        </div>
+    </section>
+
+    <section>
+        <h2>Solved Problems</h2>
+        <div class="card">
+            <h3>Problem 1: RC Low-Pass Output Power</h3>
+            <p style="color: var(--text-muted);">Calculate total output power $P_{out}$ given white noise input $N_0/2$.</p>
+            <div class="math-box">
+                $$ P_{out} = \int_{-\infty}^{\infty} S_{YY}(f) df = \frac{N_0}{2} \int_{-\infty}^{\infty} \frac{1}{1 + (2\pi f RC)^2} df $$
+                $$ \text{Result: } P_{out} = \frac{N_0}{4RC} $$
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    // --- Configuration ---
+    // Update charts dynamically based on CSS variables
+    function getCSSVar(name) {
+        return getComputedStyle(document.body).getPropertyValue(name).trim();
+    }
+
+    Chart.defaults.font.family = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif";
+    Chart.defaults.font.size = 11;
+    Chart.defaults.maintainAspectRatio = false;
+    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+
+    // --- Physics Engine (Box-Muller) ---
+    function randn_bm() {
+        let u = 0, v = 0;
+        while(u === 0) u = Math.random(); 
+        while(v === 0) v = Math.random();
+        return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+    }
+
+    // --- State Management ---
+    const state = {
+        sim1: { active: false, lastTime: 0 },
+        sim2: { active: false, dir: 1, lastTime: 0 },
+        sim3: { active: false, dir: 1, lastTime: 0 },
+        sim4: { active: false, bins: new Array(60).fill(0), count: 0, lastTime: 0 }
+    };
+
+    // --- Sim 1: Decomposition ---
+    const ctx1 = document.getElementById('chart-decomp').getContext('2d');
+    const dataLen = 150;
+    const bufTotal = Array.from({length: dataLen}, () => randn_bm());
+    const bufDC = new Array(dataLen).fill(0);
+    const bufAC = [...bufTotal];
+    
+    const chart1 = new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: new Array(dataLen).fill(''),
+            datasets: [
+                { label: 'Total Signal', borderColor: '#007bff', borderWidth: 2, data: bufTotal, pointRadius: 0, tension: 0.3 },
+                { label: 'DC Component', borderColor: '#e74c3c', borderDash: [6,4], borderWidth: 2, data: bufDC, pointRadius: 0 },
+                { label: 'AC Noise', borderColor: '#2ecc71', borderWidth: 1, data: bufAC, pointRadius: 0 }
+            ]
+        },
+        options: {
+            animation: false, interaction: {mode: 'none'},
+            scales: { y: { min: -8, max: 8 }, x: { display: false } },
+            elements: { line: { tension: 0.3 } }
+        }
+    });
+
+    function loopSim1(timestamp) {
+        if (!state.sim1.active) return;
+        
+        const speed = parseInt(document.getElementById('speed-sim1').value);
+        if (timestamp - state.sim1.lastTime < (1000 / (speed * 4))) {
+            requestAnimationFrame(loopSim1); return;
+        }
+        state.sim1.lastTime = timestamp;
+
+        const mean = parseFloat(document.getElementById('slider-dc').value);
+        const variance = parseFloat(document.getElementById('slider-var').value);
+        
+        document.getElementById('val-dc').textContent = mean.toFixed(1) + "V";
+        document.getElementById('val-var').textContent = variance.toFixed(1) + "V²";
+
+        bufTotal.shift(); bufDC.shift(); bufAC.shift();
+        const acVal = randn_bm() * Math.sqrt(variance);
+        bufAC.push(acVal);
+        bufDC.push(mean);
+        bufTotal.push(mean + acVal);
+        
+        chart1.update('none');
+        requestAnimationFrame(loopSim1);
+    }
+
+    // --- Sim 2: Correlation ---
+    const ctx2a = document.getElementById('chart-signals').getContext('2d');
+    const ctx2b = document.getElementById('chart-corr').getContext('2d');
+    const S2_len = 120;
+    const s_base1 = Array.from({length: S2_len}, (_, i) => Math.sin(i*0.15) * Math.exp(-0.02*Math.abs(i-60)));
+    const s_base2 = [...s_base1];
+    
+    // Precalc
+    const corr_vals = [];
+    for(let tau = -50; tau <= 50; tau++) {
+        let sum = 0;
+        for(let t=0; t<S2_len; t++) {
+            let idx = t + tau;
+            if(idx >=0 && idx < S2_len) sum += s_base1[t] * s_base2[idx];
+        }
+        corr_vals.push(sum/20);
+    }
+
+    const chart2a = new Chart(ctx2a, {
+        type: 'line',
+        data: {
+            labels: Array(S2_len).fill(''),
+            datasets: [
+                { label: 'Signal 1', borderColor: '#007bff', data: s_base1, pointRadius: 0, borderWidth: 2 },
+                { label: 'Signal 2 (Shifted)', borderColor: '#ff9f43', data: [], pointRadius: 0, borderWidth: 2 }
+            ]
+        },
+        options: { animation: false, scales: { x: {display:false}, y: {min: -1.5, max: 1.5} } }
+    });
+
+    const chart2b = new Chart(ctx2b, {
+        type: 'line',
+        data: {
+            labels: Array.from({length: 101}, (_,i)=>i-50),
+            datasets: [
+                { label: 'Correlation R(τ)', borderColor: '#9b59b6', data: corr_vals, pointRadius: 0, borderWidth: 2, fill: true, backgroundColor: 'rgba(155, 89, 182, 0.1)' },
+                { label: 'Current', backgroundColor: '#e74c3c', data: [], pointRadius: 6, type: 'scatter' }
+            ]
+        },
+        options: { animation: false }
+    });
+
+    function updateSim2UI(tau) {
+        document.getElementById('val-tau').textContent = tau + " ms";
+        const shifted = new Array(S2_len).fill(0);
+        for(let t=0; t<S2_len; t++) {
+            let idx = t + tau;
+            if(idx >= 0 && idx < S2_len) shifted[t] = s_base2[idx];
+        }
+        chart2a.data.datasets[1].data = shifted;
+        
+        const dot = new Array(101).fill(null);
+        dot[tau+50] = corr_vals[tau+50];
+        chart2b.data.datasets[1].data = dot;
+        
+        chart2a.update('none'); chart2b.update('none');
+    }
+
+    function loopSim2(timestamp) {
+        if (!state.sim2.active) return;
+        const speed = parseInt(document.getElementById('speed-sim2').value);
+        if (timestamp - state.sim2.lastTime < (1000 / (speed * 6))) { requestAnimationFrame(loopSim2); return; }
+        state.sim2.lastTime = timestamp;
+
+        let slider = document.getElementById('slider-tau');
+        let val = parseInt(slider.value) + state.sim2.dir;
+        
+        if (val >= 50) { val = 50; state.sim2.dir = -1; }
+        if (val <= -50) { val = -50; state.sim2.dir = 1; }
+        
+        slider.value = val;
+        updateSim2UI(val);
+        requestAnimationFrame(loopSim2);
+    }
+
+    // --- Sim 3: PSD ---
+    const ctx3 = document.getElementById('chart-lti').getContext('2d');
+    const f_axis = Array.from({length: 200}, (_,i) => i * (30/200));
+    
+    const chart3 = new Chart(ctx3, {
+        type: 'line',
+        data: {
+            labels: f_axis.map(f=>f.toFixed(1)),
+            datasets: [
+                { label: 'Input Noise', borderColor: '#adb5bd', borderDash: [5,5], data: Array(200).fill(10), pointRadius:0 },
+                { label: 'Output PSD', borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.2)', fill: true, data: [], pointRadius:0, borderWidth: 2 }
+            ]
+        },
+        options: { animation: false, scales: { y: {beginAtZero: true, max: 12}, x: {ticks: {maxTicksLimit: 10}} } }
+    });
+
+    function loopSim3(timestamp) {
+        if (!state.sim3.active) return;
+        const speed = parseInt(document.getElementById('speed-sim3').value);
+        if (timestamp - state.sim3.lastTime < (1000 / (speed * 12))) { requestAnimationFrame(loopSim3); return; }
+        state.sim3.lastTime = timestamp;
+
+        let slider = document.getElementById('slider-fc');
+        let fc = parseFloat(slider.value) + (0.2 * state.sim3.dir);
+        
+        if (fc >= 20) { fc = 20; state.sim3.dir = -1; }
+        if (fc <= 1) { fc = 1; state.sim3.dir = 1; }
+        
+        slider.value = fc;
+        document.getElementById('val-fc').textContent = fc.toFixed(1) + " Hz";
+        
+        const psd = f_axis.map(f => 10 / (1 + Math.pow(f/fc, 2)));
+        chart3.data.datasets[1].data = psd;
+        chart3.update('none');
+        requestAnimationFrame(loopSim3);
+    }
+
+    // --- Sim 4: PDF ---
+    const ctx4 = document.getElementById('chart-pdf').getContext('2d');
+    const x_bins = Array.from({length: 60}, (_,i) => -4 + i*(8/60));
+    const y_theory = x_bins.map(x => (1/Math.sqrt(2*Math.PI)) * Math.exp(-0.5*x*x));
+
+    const chart4 = new Chart(ctx4, {
+        type: 'bar',
+        data: {
+            labels: x_bins.map(v=>v.toFixed(1)),
+            datasets: [
+                { type: 'line', label: 'Gaussian Theory', borderColor: '#e74c3c', borderWidth: 2, data: y_theory, pointRadius:0 },
+                { label: 'Histogram', backgroundColor: '#007bff', data: new Array(60).fill(0) }
+            ]
+        },
+        options: { animation: false, scales: { x: {display:false}, y: {beginAtZero:true} } }
+    });
+
+    function loopSim4(timestamp) {
+        if (!state.sim4.active) return;
+        const batch = parseInt(document.getElementById('speed-sim4').value) * 15;
+        
+        for(let k=0; k<batch; k++) {
+            let val = randn_bm();
+            if (val >= -4 && val <= 4) {
+                let idx = Math.floor((val + 4)/8 * 60);
+                if (idx < 60) state.sim4.bins[idx]++;
+            }
+            state.sim4.count++;
+        }
+        
+        document.getElementById('sample-count').textContent = state.sim4.count.toLocaleString();
+        
+        const area = state.sim4.count * (8/60);
+        chart4.data.datasets[1].data = state.sim4.bins.map(b => b/area);
+        chart4.update('none');
+        requestAnimationFrame(loopSim4);
+    }
+
+    // --- Event Listeners & Theme ---
+    function updateBtn(id, active, txt="Play") {
+        const btn = document.getElementById(id);
+        if (active) {
+            btn.innerHTML = "❚❚ Pause"; btn.className = "btn btn-pause";
+        } else {
+            btn.innerHTML = "▶ " + txt; btn.className = "btn btn-play";
+        }
+    }
+
+    function toggleSim1() { state.sim1.active = !state.sim1.active; updateBtn('btn-sim1', state.sim1.active, "Play Trace"); if(state.sim1.active) requestAnimationFrame(loopSim1); }
+    function toggleSim2() { state.sim2.active = !state.sim2.active; updateBtn('btn-sim2', state.sim2.active, "Start Scan"); if(state.sim2.active) requestAnimationFrame(loopSim2); }
+    function toggleSim3() { state.sim3.active = !state.sim3.active; updateBtn('btn-sim3', state.sim3.active, "Auto Sweep"); if(state.sim3.active) requestAnimationFrame(loopSim3); }
+    function toggleSim4() { state.sim4.active = !state.sim4.active; updateBtn('btn-sim4', state.sim4.active, "Run"); if(state.sim4.active) requestAnimationFrame(loopSim4); }
+
+    function resetSim4() {
+        state.sim4.active = false; updateBtn('btn-sim4', false, "Run");
+        state.sim4.bins.fill(0); state.sim4.count = 0;
+        chart4.data.datasets[1].data.fill(0); chart4.update();
+        document.getElementById('sample-count').textContent = "0";
+    }
+
+    document.getElementById('slider-tau').addEventListener('input', (e) => {
+        if(state.sim2.active) toggleSim2();
+        updateSim2UI(parseInt(e.target.value));
+    });
+    
+    document.getElementById('slider-fc').addEventListener('input', (e) => {
+        if(state.sim3.active) toggleSim3();
+        let val = parseFloat(e.target.value);
+        document.getElementById('val-fc').textContent = val.toFixed(1) + " Hz";
+        const psd = f_axis.map(f => 10 / (1 + Math.pow(f/val, 2)));
+        chart3.data.datasets[1].data = psd;
+        chart3.update('none');
+    });
+
+    // Theme Logic
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        document.getElementById('theme-icon').textContent = isDark ? '☀️' : '🌙';
+        
+        // Update Chart Colors
+        const gridC = isDark ? '#333' : '#eee';
+        const textC = isDark ? '#aaa' : '#666';
+        
+        [chart1, chart2a, chart2b, chart3, chart4].forEach(c => {
+            if(c) {
+                c.options.scales.x.grid.color = gridC;
+                c.options.scales.y.grid.color = gridC;
+                c.options.scales.x.ticks.color = textC;
+                c.options.scales.y.ticks.color = textC;
+                c.options.plugins.legend.labels.color = textC;
+                c.update();
+            }
+        });
+    }
+
+    // Init
+    updateSim2UI(0);
+    // Init Chart 3
+    const initFC = 5.0;
+    chart3.data.datasets[1].data = f_axis.map(f => 10 / (1 + Math.pow(f/initFC, 2)));
+    chart3.update();
+
+</script>
+</body>
+</html>
